@@ -177,7 +177,7 @@ class TmdbApi(BaseApiClient):
     def get_reviews_for(
         self, params: MediaReviewsParams
     ) -> Optional[List[MediaReview]]:
-        media_type = "tv"  # Assume tv
+        media_type = DEFAULT_MEDIA_TYPE  # Assume tv
         api_params = {
             "api_key": self.api_key,
             "language": self.config.preferred_language,
