@@ -113,7 +113,26 @@ class TmdbApi(BaseApiClient):
             return mapper.to_generic_recommendations(response.json())
         except Exception as e:
             logger.error(f"Error getting recommendations for {params.id}: {e}")
-            return None
+        # We will try both 'tv' and 'movie' endpoints and return the first successful result.
+        api_params = {
+            "api_key": self.api_key,
+            "page": params.page or 1,
+            "language": self.config.preferred_language,
+        }
+        for media_type in ["tv", "movie"]:
+            try:
+                response = self.http_client.get(
+                    f"{TMDB_API_URL}/{media_type}/{params.id}/recommendations", params=api_params
+                )
+                response.raise_for_status()
+                data = response.json()
+                # If results are found, return them
+                if data.get("results"):
+                    return mapper.to_generic_recommendations(data)
+            except Exception as e:
+                logger.debug(f"Error getting recommendations for {params.id} as {media_type}: {e}")
+        logger.error(f"Error getting recommendations for {params.id}: No recommendations found for either 'tv' or 'movie'.")
+        return None
 
     def get_characters_of(
         self, params: MediaCharactersParams
