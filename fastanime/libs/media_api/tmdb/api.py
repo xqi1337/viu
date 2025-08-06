@@ -152,7 +152,7 @@ class TmdbApi(BaseApiClient):
     def get_related_anime_for(
         self, params: MediaRelationsParams
     ) -> Optional[List[MediaItem]]:
-        media_type = "tv"  # Assume tv
+        media_type = self._get_tmdb_media_type(params)
         api_params = {
             "api_key": self.api_key,
             "language": self.config.preferred_language,
