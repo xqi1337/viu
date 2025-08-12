@@ -8,7 +8,11 @@ from ....provider.anime.types import (
     SearchResult,
     SearchResults,
 )
-from ....provider.scraping.html_parser import extract_attributes, get_element_by_class
+from ....provider.scraping.html_parser import (
+    extract_attributes,
+    get_element_by_class,
+    get_elements_by_class,
+)
 
 
 def _parse_episodes(element_html: str) -> AnimeEpisodes:
@@ -73,13 +77,23 @@ def map_to_search_results(
 
     # Parse pagination to determine total pages
     total_pages = 1
-    pagination_last = get_element_by_class('page-item a[title="Last"]', full_html)
-    if pagination_last:
-        attrs = extract_attributes(pagination_last)
-        href = attrs.get("href", "")
-        if "?page=" in href:
-            total_pages = int(href.split("?page=")[-1])
-
+    # Use a simpler selector that is less prone to parsing issues.
+    pagination_elements = get_elements_by_class("page-item", full_html)
+    if pagination_elements:
+        # Find the last page number from all pagination links
+        last_page_num = 0
+        for el in pagination_elements:
+            attrs = extract_attributes(el)
+            href = attrs.get("href", "")
+            if "?page=" in href:
+                try:
+                    num = int(href.split("?page=")[-1])
+                    if num > last_page_num:
+                        last_page_num = num
+                except (ValueError, IndexError):
+                    continue
+        if last_page_num > 0:
+            total_pages = last_page_num
     page_info = PageInfo(total=total_pages)
     return SearchResults(page_info=page_info, results=results)
 
