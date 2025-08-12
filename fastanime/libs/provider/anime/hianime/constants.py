@@ -1,5 +1,5 @@
 # The base domain for HiAnime.
-HIANIME_DOMAIN = "hianimez.to"
+HIANIME_DOMAIN = "hianime.to"
 HIANIME_BASE_URL = f"https://{HIANIME_DOMAIN}"
 
 # The endpoint for making AJAX requests (fetching episodes, servers, etc.).
