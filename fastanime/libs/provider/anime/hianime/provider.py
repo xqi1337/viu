@@ -64,7 +64,8 @@ class HiAnime(BaseAnimeProvider):
         """
         try:
             # The numeric ID is the last part of the slug.
-            anime_id_numeric = params.id.split("-")[-1]
+            clean_id_slug = params.id.split("?")[0]
+            anime_id_numeric = clean_id_slug.split("-")[-1]
             if not anime_id_numeric.isdigit():
                 raise ValueError("Could not extract numeric ID from anime slug.")
 
