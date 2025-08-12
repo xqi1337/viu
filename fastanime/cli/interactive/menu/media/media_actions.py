@@ -94,6 +94,9 @@ def media_actions(ctx: Context, state: State) -> State | InternalDirective:
             f"{'🔘 ' if icons else ''}Toggle Translation Type  (Current: {ctx.config.stream.translation_type.upper()})": _toggle_config_state(
                 ctx, state, "TRANSLATION_TYPE"
             ),
+            f"{'🔘 ' if icons else ''}Toggle Auto Skip (Current: {ctx.config.stream.auto_skip})": _toggle_config_state(
+                ctx, state, "AUTO_SKIP"
+            ),
             f"{'🔙 ' if icons else ''}Back to Results": lambda: InternalDirective.BACK,
             f"{'❌ ' if icons else ''}Exit": lambda: InternalDirective.EXIT,
         }
@@ -317,7 +320,11 @@ def _toggle_config_state(
     ctx: Context,
     state: State,
     config_state: Literal[
-        "AUTO_ANIME", "AUTO_EPISODE", "CONTINUE_FROM_HISTORY", "TRANSLATION_TYPE"
+        "AUTO_ANIME",
+        "AUTO_EPISODE",
+        "CONTINUE_FROM_HISTORY",
+        "TRANSLATION_TYPE",
+        "AUTO_SKIP",
     ],
 ) -> MenuAction:
     def action():
@@ -336,6 +343,8 @@ def _toggle_config_state(
                 ctx.config.stream.translation_type = (
                     "sub" if ctx.config.stream.translation_type == "dub" else "dub"
                 )
+            case "AUTO_SKIP":
+                ctx.config.stream.auto_skip = not ctx.config.stream.auto_skip
         return InternalDirective.RELOAD
 
     return action

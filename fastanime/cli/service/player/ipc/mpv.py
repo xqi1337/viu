@@ -18,6 +18,7 @@ from typing import Any, Callable, Dict, List, Literal, Optional
 from .....core.config.model import StreamConfig
 from .....core.exceptions import FastAnimeError
 from .....core.utils import formatter
+from .....libs.aniskip.api import AniSkip, SkipTimeResult
 from .....libs.media_api.types import MediaItem
 from .....libs.player.base import BasePlayer
 from .....libs.player.params import PlayerParams
@@ -252,6 +253,8 @@ class PlayerState:
 class MpvIPCPlayer(BaseIPCPlayer):
     """MPV Player implementation using IPC for advanced features."""
 
+    _skip_times: Optional[SkipTimeResult] = None
+    _skipped_ids: set[str] = set()  # To prevent re-skipping the same segment
     stream_config: StreamConfig
     mpv_process: subprocess.Popen
     ipc_client: MPVIPCClient
@@ -283,6 +286,9 @@ class MpvIPCPlayer(BaseIPCPlayer):
         registry: Optional[MediaRegistryService] = None,
         media_item: Optional[MediaItem] = None,
     ) -> PlayerResult:
+        self._skip_times = None  # Reset on each new play call
+        self._skipped_ids = set()
+
         self.provider = provider
         self.anime = anime
         self.media_item = media_item
@@ -441,6 +447,7 @@ class MpvIPCPlayer(BaseIPCPlayer):
         elif event == "client-message":
             self._handle_client_message(message)
         elif event == "file-loaded":
+            self._fetch_and_load_skip_times()
             time.sleep(0.1)
             self._configure_player()
         elif event:
@@ -451,6 +458,8 @@ class MpvIPCPlayer(BaseIPCPlayer):
         data = message.get("data")
         if name == "time-pos" and isinstance(data, (int, float)):
             self.player_state.stop_time_secs = data
+            self._check_for_skip(data)
+
         elif name == "duration" and isinstance(data, (int, float)):
             self.player_state.total_time_secs = data
         elif name == "percent-pos" and isinstance(data, (int, float)):
@@ -698,3 +707,55 @@ class MpvIPCPlayer(BaseIPCPlayer):
 
     def _handle_select_quality(self, quality: Optional[str] = None):
         self._show_text("Quality switching is not yet implemented.")
+
+    def _check_for_skip(self, current_time: float):
+        """Checks if the current playback time falls within a skip interval."""
+        if (
+            not self.stream_config.auto_skip
+            or not self._skip_times
+            or not self._skip_times.found
+        ):
+            return
+
+        for skip in self._skip_times.results:
+            if skip.skip_id in self._skipped_ids:
+                continue
+
+            start_time, end_time = skip.interval
+            # Trigger skip slightly after the start time
+            if start_time <= current_time < end_time:
+                logger.info(
+                    f"Skipping {skip.skip_type.upper()} from {start_time} to {end_time}"
+                )
+                self._show_text(f"Skipping {skip.skip_type.upper()}...", duration=1500)
+                self.ipc_client.send_command(["set_property", "time-pos", end_time])
+                self._skipped_ids.add(skip.skip_id)
+                break
+
+    def _fetch_and_load_skip_times(self):
+        """Fetches skip times for the current episode in a background thread."""
+        if (
+            not self.stream_config.auto_skip
+            or not self.media_item
+            or not self.media_item.id_mal
+        ):
+            return
+
+        try:
+            episode_num = int(float(self.player_state.episode))
+            mal_id = self.media_item.id_mal
+
+            def task():
+                self._skip_times = AniSkip.get_skip_times(mal_id, episode_num)
+                if self._skip_times and self._skip_times.found:
+                    logger.info(
+                        f"Found {len(self._skip_times.results)} skip intervals for Ep {episode_num}"
+                    )
+                    self._show_text("Skip times loaded.", duration=2000)
+
+            # Run in a thread to not block playback
+            threading.Thread(target=task, daemon=True).start()
+        except (ValueError, TypeError):
+            logger.warning(
+                f"Could not parse episode number for Aniskip: {self.player_state.episode}"
+            )
