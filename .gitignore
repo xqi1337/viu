@@ -210,3 +210,4 @@ repomix-output.xml
 .project/
 result
 .direnv
+fastanime/libs/provider/anime/hianime/extractors/js/node_modules

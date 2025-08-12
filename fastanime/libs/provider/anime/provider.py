@@ -12,8 +12,6 @@ PROVIDERS_AVAILABLE = {
     "allanime": "provider.AllAnime",
     "animepahe": "provider.AnimePahe",
     "hianime": "provider.HiAnime",
-    "nyaa": "provider.Nyaa",
-    "yugen": "provider.Yugen",
 }
 
 

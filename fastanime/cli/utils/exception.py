@@ -1,6 +1,9 @@
+import os
 import sys
 
 from rich.traceback import install as rich_install
+
+from ...core.constants import PROJECT_NAME
 
 
 def custom_exception_hook(exc_type, exc_value, exc_traceback):
@@ -16,6 +19,9 @@ def setup_exceptions_handler(
     rich_traceback: bool | None,
     rich_traceback_theme: str,
 ):
+    if dev:
+        # auto set env
+        os.environ[f"{PROJECT_NAME}_DEBUG"] = "1"
     if trace or dev:
         sys.excepthook = default_exception_hook
         if rich_traceback:
