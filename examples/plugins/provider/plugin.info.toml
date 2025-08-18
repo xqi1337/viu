@@ -1,0 +1,10 @@
+[plugin]
+name = "Example Provider Plugin"
+version = "1.0.0"
+description = "A demo provider plugin for testing the viu plugin system"
+author = "Viu Developer"
+homepage = "https://github.com/example/viu-example-plugin"
+requires_python = ">=3.11"
+
+[components]
+provider = "example_provider:ExampleProvider"

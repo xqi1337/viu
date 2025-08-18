@@ -1,0 +1,15 @@
+[multi-file-provider]
+# Base URL for the anime site
+base_url = "https://multifile.example.site"
+
+# Request timeout in seconds
+timeout = 30
+
+# Preferred video quality
+preferred_quality = "720p"
+
+# Maximum number of search results
+max_results = 25
+
+# Enable debug logging
+debug = false

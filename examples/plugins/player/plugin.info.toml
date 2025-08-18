@@ -1,0 +1,9 @@
+[plugin]
+name = "Multi-File Provider Plugin"
+version = "1.0.0"
+description = "A demo plugin with multiple Python files"
+author = "Viu Developer"
+requires_python = ">=3.11"
+
+[components]
+player = "player:VlcPlayer"

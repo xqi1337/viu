@@ -1,0 +1,18 @@
+# Default configuration for Example Provider Plugin
+# This file is automatically copied to ~/.config/viu/plugins.config.toml during installation
+
+[example-provider]
+# Request timeout in seconds
+timeout = 30
+
+# Preferred video quality
+preferred_quality = "720p"
+
+# Maximum number of search results to return
+max_results = 20
+
+# Custom headers (optional)
+# custom_header = "value"
+
+# Enable debug logging for this plugin
+# debug = false
