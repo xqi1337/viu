@@ -30,8 +30,18 @@ class PlayerFactory:
             ValueError: If the player_name is not supported.
             NotImplementedError: If the player is recognized but not yet implemented.
         """
+        from ...core.plugins.manager import plugin_manager
+        
         player_name = config.stream.player
 
+        # Check if it's a plugin first
+        if plugin_manager.is_plugin("player", player_name):
+            try:
+                return plugin_manager.load_component("player", player_name)
+            except Exception as e:
+                raise ValueError(f"Could not load plugin player '{player_name}': {e}") from e
+
+        # Handle built-in players
         if player_name not in PLAYERS:
             raise ValueError(
                 f"Unsupported player: '{player_name}'. Supported players are: {PLAYERS}"

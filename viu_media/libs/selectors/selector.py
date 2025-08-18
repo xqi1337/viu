@@ -14,8 +14,18 @@ class SelectorFactory:
         """
         Factory to create a selector instance based on the configuration.
         """
+        from ...core.plugins.manager import plugin_manager
+        
         selector_name = config.general.selector
 
+        # Check if it's a plugin first
+        if plugin_manager.is_plugin("selector", selector_name):
+            try:
+                return plugin_manager.load_component("selector", selector_name)
+            except Exception as e:
+                raise ValueError(f"Could not load plugin selector '{selector_name}': {e}") from e
+
+        # Handle built-in selectors
         if selector_name not in SELECTORS:
             raise ValueError(
                 f"Unsupported selector: '{selector_name}'.Available selectors are: {SELECTORS}"

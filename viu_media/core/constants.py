@@ -76,11 +76,17 @@ else:
 USER_APPLICATIONS = Path.home() / ".local" / "share" / "applications"
 LOG_FOLDER = APP_CACHE_DIR / "logs"
 
+# Plugin system paths
+PLUGINS_DIR = APP_DATA_DIR / "plugins"
+PLUGINS_MANIFEST = APP_DATA_DIR / "plugins.toml"
+PLUGINS_CONFIG = APP_DATA_DIR / "plugins.config.toml"
+
 # USER_APPLICATIONS.mkdir(parents=True,exist_ok=True)
 APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
 APP_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 LOG_FOLDER.mkdir(parents=True, exist_ok=True)
 USER_VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
+PLUGINS_DIR.mkdir(parents=True, exist_ok=True)
 
 USER_CONFIG = APP_DATA_DIR / "config.toml"
 
