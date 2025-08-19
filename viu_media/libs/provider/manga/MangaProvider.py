@@ -8,6 +8,7 @@ import logging
 from typing import TYPE_CHECKING
 
 # from .libs.manga_provider import manga_sources  # Module not found
+manga_sources = {}  # Fallback for missing module
 
 if TYPE_CHECKING:
     pass
@@ -27,8 +28,8 @@ class MangaProvider:
         manga_provider: [TODO:attribute]
     """
 
-    PROVIDERS = list(manga_sources.keys())
-    provider = PROVIDERS[0]
+    PROVIDERS = list(manga_sources.keys()) if manga_sources else ["mangadx"]
+    provider = PROVIDERS[0] if PROVIDERS else "mangadx"
 
     def __init__(self, provider="mangadex", dynamic=False, retries=0) -> None:
         self.provider = provider

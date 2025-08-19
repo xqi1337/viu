@@ -156,7 +156,7 @@ def test_media_api(api_client: BaseApiClient):
             if schedule_data:
                 print(f"   Found {len(schedule_data)} upcoming episodes:")
                 for ep in schedule_data[:3]:  # Show first 3
-                    print(f"     - Episode {ep['episode']}")
+                    print(f"     - Episode {ep.episode}")
             else:
                 print("   No upcoming episodes")
         else:

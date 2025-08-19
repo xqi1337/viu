@@ -13,7 +13,7 @@ from html.parser import HTMLParser as BaseHTMLParser
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
-    from lxml import etree
+    from lxml import etree  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ HAS_LXML = False
 lxml_html = None
 etree = None
 try:
-    from lxml import etree, html as lxml_html
+    from lxml import etree, html as lxml_html  # type: ignore
 
     HAS_LXML = True
     logger.debug("lxml is available and will be used for HTML parsing")
@@ -245,7 +245,7 @@ def get_element_by_id(element_id: str, html_content: str) -> Optional[str]:
     if _default_parser.config.use_lxml and HAS_LXML:
         try:
             element = parsed.xpath(f'//*[@id="{element_id}"]')  # type: ignore
-            if element:
+            if element and etree:
                 return etree.tostring(element[0], encoding="unicode", method="html")
         except Exception as e:
             logger.warning(f"lxml XPath search failed: {e}")
@@ -424,7 +424,7 @@ def get_element_text_and_html_by_tag(
                     if hasattr(element, "text_content")
                     else (element.text or "")
                 )
-                html_str = etree.tostring(element, encoding="unicode", method="html")
+                html_str = etree.tostring(element, encoding="unicode", method="html") if etree else ""
                 return text, html_str
         except Exception as e:
             logger.warning(f"lxml XPath search failed: {e}")

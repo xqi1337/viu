@@ -70,7 +70,7 @@ def _to_generic_media_item(data: dict) -> MediaItem:
         id_mal=data["mal_id"],
         title=_to_generic_title(data.get("titles", [])),
         cover_image=_to_generic_image(data.get("images", {})),
-        status=JIKAN_STATUS_MAP.get(data.get("status", ""), None),
+        status=JIKAN_STATUS_MAP.get(data.get("status", ""), MediaStatus.NOT_YET_RELEASED),
         episodes=data.get("episodes"),
         duration=data.get("duration"),
         average_score=score,
