@@ -123,17 +123,14 @@ def render(url: str, capture: bool = False, size: str = "30x30") -> Optional[str
         If capture is False, prints directly to the terminal and returns None.
         Returns None on any failure.
     """
-    # --- Common subprocess arguments ---
-    subprocess_kwargs = {
-        "check": False,  # We will handle errors manually
-        "capture_output": capture,
-        "text": capture,  # Decode stdout/stderr as text if capturing
-    }
 
     # --- Try icat (Kitty terminal) first ---
     if icat_executable := shutil.which("icat"):
         process = subprocess.run(
-            [icat_executable, "--align", "left", url], **subprocess_kwargs
+            [icat_executable, "--align", "left", url],
+            check=False,
+            capture_output=capture,
+            text=capture,
         )
         if process.returncode == 0:
             return process.stdout if capture else None
@@ -148,11 +145,12 @@ def render(url: str, capture: bool = False, size: str = "30x30") -> Optional[str
                 response.raise_for_status()
                 img_bytes = response.content
 
-            # Add stdin input to the subprocess arguments
-            subprocess_kwargs["input"] = img_bytes
-
             process = subprocess.run(
-                [chafa_executable, f"--size={size}", "-"], **subprocess_kwargs
+                [chafa_executable, f"--size={size}", "-"],
+                check=False,
+                capture_output=capture,
+                text=capture,
+                input=img_bytes,
             )
             if process.returncode == 0:
                 return process.stdout if capture else None

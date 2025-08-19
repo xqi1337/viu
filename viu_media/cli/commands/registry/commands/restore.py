@@ -5,6 +5,7 @@ Registry restore command - restore registry from backup files
 import json
 import shutil
 import tarfile
+import zipfile
 from datetime import datetime
 from pathlib import Path
 
@@ -123,6 +124,7 @@ def _verify_backup(
     """Verify backup file integrity."""
     try:
         has_registry = has_index = has_metadata = False
+        metadata = None
         if format_type == "tar":
             with tarfile.open(backup_file, "r:*") as tar:
                 names = tar.getnames()
@@ -134,8 +136,6 @@ def _verify_backup(
                     if metadata_file := tar.extractfile(metadata_member):
                         metadata = json.load(metadata_file)
         else:  # zip
-            import zipfile
-
             with zipfile.ZipFile(backup_file, "r") as zip_file:
                 names = zip_file.namelist()
                 has_registry = any("registry/" in name for name in names)
@@ -145,7 +145,7 @@ def _verify_backup(
                     with zip_file.open("backup_metadata.json") as metadata_file:
                         metadata = json.load(metadata_file)
 
-        if has_metadata:
+        if has_metadata and metadata:
             feedback.info(
                 "Backup Info", f"Created: {metadata.get('backup_timestamp', 'Unknown')}"
             )
