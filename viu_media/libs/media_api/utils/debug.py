@@ -130,12 +130,12 @@ def test_media_api(api_client: BaseApiClient):
         characters = api_client.get_characters_of(
             MediaCharactersParams(id=selected_anime.id)
         )
-        if characters and characters.get("data"):
-            char_data = characters["data"]["Page"]["media"][0]["characters"]["nodes"]
+        if characters and characters.characters:
+            char_data = characters.characters
             if char_data:
                 print(f"   Found {len(char_data)} characters:")
                 for char in char_data[:3]:  # Show first 3
-                    name = char["name"]["full"] or char["name"]["first"]
+                    name = char.name.full or char.name.first
                     print(f"     - {name}")
             else:
                 print("   No character data found")
@@ -151,10 +151,8 @@ def test_media_api(api_client: BaseApiClient):
         schedule = api_client.get_airing_schedule_for(
             MediaAiringScheduleParams(id=selected_anime.id)
         )
-        if schedule and schedule.get("data"):
-            schedule_data = schedule["data"]["Page"]["media"][0]["airingSchedule"][
-                "nodes"
-            ]
+        if schedule and schedule.schedule_items:
+            schedule_data = schedule.schedule_items
             if schedule_data:
                 print(f"   Found {len(schedule_data)} upcoming episodes:")
                 for ep in schedule_data[:3]:  # Show first 3

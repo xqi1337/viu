@@ -7,7 +7,7 @@ import importlib
 import logging
 from typing import TYPE_CHECKING
 
-from .libs.manga_provider import manga_sources
+# from .libs.manga_provider import manga_sources  # Module not found
 
 if TYPE_CHECKING:
     pass

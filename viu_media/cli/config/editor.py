@@ -28,7 +28,7 @@ class InteractiveConfigEditor:
                 if not isinstance(section_model, BaseModel):
                     continue
 
-                if not inquirer.confirm(
+                if not inquirer.confirm(  # type: ignore
                     message=f"Configure '{section_name.title()}' settings?",
                     default=True,
                 ).execute():
@@ -83,14 +83,14 @@ class InteractiveConfigEditor:
 
         # Boolean fields
         if field_type is bool:
-            return inquirer.confirm(
+            return inquirer.confirm(  # type: ignore
                 message=message, default=current_value, long_instruction=help_text
             )
 
         # Literal (Choice) fields
         if hasattr(field_type, "__origin__") and get_origin(field_type) is Literal:
             choices = list(get_args(field_type))
-            return inquirer.select(
+            return inquirer.select(  # type: ignore
                 message=message,
                 choices=choices,
                 default=current_value,
@@ -99,7 +99,7 @@ class InteractiveConfigEditor:
 
         # Numeric fields
         if field_type is int:
-            return inquirer.number(
+            return inquirer.number(  # type: ignore
                 message=message,
                 default=int(current_value),
                 long_instruction=help_text,
@@ -110,7 +110,7 @@ class InteractiveConfigEditor:
                 validate=NumberValidator(),
             )
         if field_type is float:
-            return inquirer.number(
+            return inquirer.number(  # type: ignore
                 message=message,
                 default=float(current_value),
                 float_allowed=True,
@@ -120,7 +120,7 @@ class InteractiveConfigEditor:
         # Path fields
         if field_type is Path:
             # Use text prompt for paths to allow '~' expansion, as FilePathPrompt can be tricky
-            return inquirer.text(
+            return inquirer.text(  # type: ignore
                 message=message, default=str(current_value), long_instruction=help_text
             )
 
@@ -128,13 +128,13 @@ class InteractiveConfigEditor:
         if field_type is str:
             # Check for 'examples' to provide choices
             if hasattr(field_info, "examples") and field_info.examples:
-                return inquirer.fuzzy(
+                return inquirer.fuzzy(  # type: ignore
                     message=message,
                     choices=field_info.examples,
                     default=str(current_value),
                     long_instruction=help_text,
                 )
-            return inquirer.text(
+            return inquirer.text(  # type: ignore
                 message=message, default=str(current_value), long_instruction=help_text
             )
 

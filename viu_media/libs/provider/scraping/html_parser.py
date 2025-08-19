@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 
 # Try to import lxml
 HAS_LXML = False
+lxml_html = None
+etree = None
 try:
     from lxml import etree, html as lxml_html
 
@@ -80,7 +82,10 @@ class HTMLParser:
         """Parse HTML using lxml."""
         try:
             # Use lxml's HTML parser which is more lenient
-            return lxml_html.fromstring(html_content)
+            if HAS_LXML and lxml_html:
+                return lxml_html.fromstring(html_content)
+            else:
+                raise ImportError("lxml not available")
         except Exception as e:
             logger.warning(f"lxml parsing failed: {e}, falling back to html.parser")
             return self._parse_with_builtin(html_content)
@@ -239,7 +244,7 @@ def get_element_by_id(element_id: str, html_content: str) -> Optional[str]:
 
     if _default_parser.config.use_lxml and HAS_LXML:
         try:
-            element = parsed.xpath(f'//*[@id="{element_id}"]')
+            element = parsed.xpath(f'//*[@id="{element_id}"]')  # type: ignore
             if element:
                 return etree.tostring(element[0], encoding="unicode", method="html")
         except Exception as e:
@@ -268,9 +273,9 @@ def get_element_by_tag(tag_name: str, html_content: str) -> Optional[str]:
 
     if _default_parser.config.use_lxml and HAS_LXML:
         try:
-            elements = parsed.xpath(f"//{tag_name}")
+            elements = parsed.xpath(f"//{tag_name}")  # type: ignore
             if elements:
-                return etree.tostring(elements[0], encoding="unicode", method="html")
+                return etree.tostring(elements[0], encoding="unicode", method="html")  # type: ignore
         except Exception as e:
             logger.warning(f"lxml XPath search failed: {e}")
             return None
@@ -297,9 +302,9 @@ def get_element_by_class(class_name: str, html_content: str) -> Optional[str]:
 
     if _default_parser.config.use_lxml and HAS_LXML:
         try:
-            elements = parsed.xpath(f'//*[contains(@class, "{class_name}")]')
+            elements = parsed.xpath(f'//*[contains(@class, "{class_name}")]')  # type: ignore
             if elements:
-                return etree.tostring(elements[0], encoding="unicode", method="html")
+                return etree.tostring(elements[0], encoding="unicode", method="html")  # type: ignore
         except Exception as e:
             logger.warning(f"lxml XPath search failed: {e}")
             return None
@@ -327,10 +332,10 @@ def get_elements_by_tag(tag_name: str, html_content: str) -> List[str]:
 
     if _default_parser.config.use_lxml and HAS_LXML:
         try:
-            elements = parsed.xpath(f"//{tag_name}")
+            elements = parsed.xpath(f"//{tag_name}")  # type: ignore
             for element in elements:
                 results.append(
-                    etree.tostring(element, encoding="unicode", method="html")
+                    etree.tostring(element, encoding="unicode", method="html")  # type: ignore
                 )
         except Exception as e:
             logger.warning(f"lxml XPath search failed: {e}")
@@ -358,10 +363,10 @@ def get_elements_by_class(class_name: str, html_content: str) -> List[str]:
 
     if _default_parser.config.use_lxml and HAS_LXML:
         try:
-            elements = parsed.xpath(f'//*[contains(@class, "{class_name}")]')
+            elements = parsed.xpath(f'//*[contains(@class, "{class_name}")]')  # type: ignore
             for element in elements:
                 results.append(
-                    etree.tostring(element, encoding="unicode", method="html")
+                    etree.tostring(element, encoding="unicode", method="html")  # type: ignore
                 )
         except Exception as e:
             logger.warning(f"lxml XPath search failed: {e}")
@@ -411,7 +416,7 @@ def get_element_text_and_html_by_tag(
 
     if _default_parser.config.use_lxml and HAS_LXML:
         try:
-            elements = parsed.xpath(f"//{tag_name}")
+            elements = parsed.xpath(f"//{tag_name}")  # type: ignore
             if elements:
                 element = elements[0]
                 text = (

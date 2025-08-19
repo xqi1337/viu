@@ -6,8 +6,7 @@ This module provides a procedural function to launch Syncplay with the given med
 
 import shutil
 import subprocess
-
-from .tools import exit_app
+import sys
 
 
 def SyncPlayer(url: str, anime_title=None, headers={}, subtitles=[], *args):
@@ -30,7 +29,6 @@ def SyncPlayer(url: str, anime_title=None, headers={}, subtitles=[], *args):
     SYNCPLAY_EXECUTABLE = shutil.which("syncplay")
     if not SYNCPLAY_EXECUTABLE:
         print("Syncplay not found")
-        exit_app(1)
         return "0", "0"
     # start SyncPlayer
     mpv_args = []

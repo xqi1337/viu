@@ -1,7 +1,7 @@
 import logging
 
-from ...common.mini_anilist import search_for_manga_with_anilist
-from ..base_provider import MangaProvider
+# from ...common.mini_anilist import search_for_manga_with_anilist  # Module not found
+# from ..base_provider import MangaProvider  # Module not found
 from ..common import fetch_manga_info_from_bal
 
 logger = logging.getLogger(__name__)

@@ -217,15 +217,8 @@ class BackgroundWorker(ABC):
                 self.cancel_all_tasks()
                 self._executor.shutdown(wait=False, cancel_futures=True)
             else:
-                # Wait for tasks to complete with timeout
-                try:
-                    self._executor.shutdown(wait=True, timeout=timeout)
-                except TimeoutError:
-                    logger.warning(
-                        f"Worker {self.name} shutdown timed out, forcing cancellation"
-                    )
-                    self.cancel_all_tasks()
-                    self._executor.shutdown(wait=False, cancel_futures=True)
+                # Wait for tasks to complete
+                self._executor.shutdown(wait=True, cancel_futures=False)
 
             self._executor = None
             logger.debug(f"Worker {self.name} shutdown complete")
