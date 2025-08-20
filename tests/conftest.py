@@ -51,13 +51,12 @@ class BaseTestCase(unittest.TestCase):
                 "per_page": 20,
             },
             "mpv": {
-                "executable": "mpv",
-                "args": [],
+                "args": "",
             },
             "stream": {
                 "quality": "1080",
                 "translation_type": "sub",
-                "server": "top",
+                "server": "TOP",
             },
         }
         

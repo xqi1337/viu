@@ -60,6 +60,23 @@ dev-dependencies = [
 ]
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+]
 markers = [
     "integration: marks tests as integration tests that require a live network connection",
+    "slow: marks tests as slow running",
+    "unit: marks tests as unit tests",
+    "cli: marks tests as CLI-related tests",
+    "config: marks tests as configuration-related tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
 ]
